@@ -47,6 +47,7 @@ function processEvent() {
         # inspect the container and extract the service name
         local service_name=`docker inspect --format '{{ .Name }}' $container_id `
         local ip_only=`docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{end}}' $container_id `
+	echo $ip_only
         local ip_addr=`docker inspect --format '{{range.NetworkSettings.Networks}}{{.IPAddress}}{{"\t"}}{{index .Aliases 1}}{{end}}' $container_id `
 
         verbose "Service key: $key  Service Name: $service_name ip: $ip_addr"
@@ -61,7 +62,7 @@ function processEvent() {
                 grep -v ${services["$key"]} $processfile > $tmpfile
                 
                 # append the IP_ADDRESS and service name to $HOSTS
-                echo ${ip_addr} >> $tmpfile
+		echo ${ip_addr} ${services["$key"]}  >> $tmpfile
 
                 # override the original file
                 mv $tmpfile $processfile
